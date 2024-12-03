@@ -1,0 +1,15 @@
+{
+    "fname": "Amiri",
+    "lname": " ",
+    "race" : "Human",
+    "class": "Barbarian",
+    "alignment" : "ChaoticNeutral",
+    "deity" : "Gorum",
+    "str" : 18,
+    "dex" : 13,
+    "con" : 14,
+    "int" : 10,
+    "wis" : 13,
+    "cha" : 15,
+    "background" : "rawr"  
+}

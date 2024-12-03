@@ -7,7 +7,17 @@ exports.up = function(knex) {
         table.increments('character_id'),
         table.string('fname'),
         table.string('lname'),
-        table.string('race')
+        table.string('race'),
+        table.string('class'),
+        table.string('alignment'),
+        table.string('deity'),
+        table.integer('str'),
+        table.integer('dex'),
+        table.integer('con'),
+        table.integer('int'),
+        table.integer('wis'),
+        table.integer('cha'),
+        table.string('background')
       })
 };
 
