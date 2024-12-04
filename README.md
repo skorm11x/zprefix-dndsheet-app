@@ -1,5 +1,5 @@
 # 3.5E Pathfinder DND SHEET
-A pathfinder 3.5E utility application
+A pathfinder 1E utility application
 
 ## Description
 This application makes the setup, building, and organization parts of your campaign/ adventure path simpler! Both Dungeon Masters and Player's can create, export, save, and share the artifacts you need to get to doing what you want to: playing the game!

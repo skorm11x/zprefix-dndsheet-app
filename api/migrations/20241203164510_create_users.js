@@ -8,6 +8,7 @@ exports.up = function(knex) {
     table.string('fname'),
     table.string('lname'),
     table.string('handle'),
+    table.string('email'),
     table.string('username'),
     table.string('password')
     table.integer('role')

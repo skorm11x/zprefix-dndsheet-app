@@ -2,6 +2,7 @@
     "fname" : "testpc",
     "lname" : " ",
     "handle" : "testies",
+    "email" : "testerPC@gmail.com",
     "username" : "testusername",
     "password" : "password",
     "role" : 0

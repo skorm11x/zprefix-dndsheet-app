@@ -15,7 +15,8 @@ const {
  } = require('./controller.js');
 
 const validReqPaths = ['/users', '/characters', 
-    '/environments', '/games', '/active_games', '/user_games']
+    '/environments', '/games', '/active_games', '/user_games',
+    '/login']
 
 server.use(express.json());
 
@@ -53,6 +54,15 @@ function getReqHandler(req, res) {
     } else{
         //bad endpoint
         res.status(404).send(`Invalid endpoint specified: ${path}`);
+    }
+}
+
+function postReqHandler(req, res) {
+    let params = req.query;
+    let path = req.path;
+
+    if(validReqPaths.includes(path)){
+        console.log(`processing post for ${path} params: ${JSON.stringify(params)}`);
     }
 }
 

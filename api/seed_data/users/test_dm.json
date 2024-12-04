@@ -2,6 +2,7 @@
     "fname" : "testdm",
     "lname" : " ",
     "handle" : "testiesDM",
+    "email" : "testerDM@yahoo.com",
     "username" : "testDMname",
     "password" : "password",
     "role" : 1
