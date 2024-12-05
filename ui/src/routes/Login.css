@@ -19,7 +19,7 @@
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
-    margin-top: 10%;
+    margin-top: 15%;
   }
   
   h1 {
@@ -54,7 +54,7 @@
     color: #b0b0b0;
   }
   
-  .form__custom-button {
+  .form-button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -62,11 +62,30 @@
     cursor: pointer;
     border-radius: 5px;
     text-align: center;
-    width: 100%;
+    width: 80%;
     font-size: 16px;
   }
   
-  .form__custom-button:hover {
+  .form-button:hover {
     background-color: #0056b3;
   }
+
+  .register-login-option {
+    margin-top: 20px;
+  }
   
+  .switch-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    text-align: center;
+    width: 80%;
+    font-size: 16px;
+  }
+
+  .switch-btn:hover {
+    background-color: #0056b3;
+  }

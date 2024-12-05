@@ -2,12 +2,14 @@ const express = require('express');
 const cors = require('cors');
 const server = express();
 const port = 3000;
-const host = '0.0.0.0';
+const host = 'localhost';
 server.use(cors());
 
 /**
  * Our controller file handles the logic of requests,
  * define a str array (set) that contains current endpoints
+ * The idea is that it de-couples transport concerns and database access
+ * for a cleaner index.js
  */
 const { 
     getAllTableEntries,
@@ -34,7 +36,7 @@ server.post('*', (req, res) => {
 
 /**
  * Takes in a http get request for all path and queries and route
- * to appropriate functions in controller
+ * to appropriate handler in controller
  * @param {*} req 
  */
 function getReqHandler(req, res) {
@@ -65,6 +67,12 @@ function getReqHandler(req, res) {
     }
 }
 
+/**
+ * Takes in a http post request for all path and queries and route
+ * to appropriate handler in controller
+ * @param {*} req 
+ * @param {*} res 
+ */
 function postReqHandler(req, res) {
     let params = req.body;
     let path = req.path;
@@ -87,4 +95,4 @@ function postReqHandler(req, res) {
     }
 }
 
-server.listen(port, host, () => console.log(`Server is listening at port ${port}`));
+server.listen(port, host, () => console.log(`Server is listening at ${host}:${port}`));

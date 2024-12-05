@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
-import env from "react-dotenv";
-import bcrypt from 'bcryptjs'
+import Snackbar from '@mui/material/Snackbar';
+import { useNavigate } from "react-router";
+
 
 import './Login.css';
 
@@ -14,9 +15,18 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [role, setRole] = useState(0);
-    const { isAuthenticated, user, login, logout} = useAuth();
+    const [snackbar, setSnackbar] = useState(false);
+    const [snackbarMsg, setSnackbarMsg] = useState("");
 
-    const salt = bcrypt.genSaltSync(10)
+    const { isAuthenticated, user, login, logout} = useAuth();
+    let navigate = useNavigate();
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbar(false);
+    };
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -26,16 +36,14 @@ function Login() {
                 alert("Please fill out all fields.");
                 return;
             }
-            //hash password
-
-            setPassword(bcrypt.hashSync(password,'*_+DFmkpda9%%^dfndkasdf88'));
 
             payload = {
                 fname, lname, handle, username,
                 email, password, role
             };
-
-            fetch(`${env.API_SERVER_BASE}/users`, {
+            //${import.meta.env.VITE_API_SERVER_BASE}
+            //http://localhost:3000
+            fetch(`${import.meta.env.VITE_API_SERVER_BASE}/users`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -49,14 +57,20 @@ function Login() {
                     return response.json();
                 })
                 .then((data) => {
-                    if(data.authenticated == true){
+                    if(data.status == "SUCCESS"){
                       console.log("Login successful:", data);
                       alert("Registration successful!");
-                      login(data.email);
+                      login(data.username);
                       console.log(isAuthenticated);
+                      navigate('/home');
                     } else{
-                      console.log("Register FAILURE:", data);
-                      alert("REGISTER FAILURE!");
+                        if(data.error == "Username already exists!"){
+                            setSnackbarMsg("Username is already taken!");
+                            setSnackbar(true);
+                        } else{
+                            console.log("Register FAILURE:", data);
+                            alert("REGISTER FAILURE!");
+                        }
                     }
                 })
                 .catch((error) => {
@@ -72,8 +86,8 @@ function Login() {
             payload = {
                 username, password
             };
-
-            fetch(`${env.API_SERVER_BASE}/login`, {
+            //${import.meta.env.VITE_API_SERVER_BASE}
+            fetch(`${import.meta.env.VITE_API_SERVER_BASE}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -87,11 +101,11 @@ function Login() {
                     return response.json();
                 })
                 .then((data) => {
-                    if(data.authenticated == true){
-                      console.log("Login successful:", data);
-                      alert("Login successful!");
-                      login(data.email);
-                      console.log(isAuthenticated);
+                    if(data.status == "SUCCESS"){
+                      console.log(`Login successful: ${username} currently auth: ${isAuthenticated}`);
+                      alert(`Login successful! for ${username}`);
+                      login(data.user);
+                      navigate('/home');
                     } else{
                       console.log("Login FAILURE:", data);
                       alert("Login FAILURE!");
@@ -105,114 +119,73 @@ function Login() {
 
     };
 
-    if(authType == "login"){
-        return (
-            <div className="auth-page">
-                <div className="container">
-                <h1>Register</h1>
-                    <form className="form" onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                id="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Enter username"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="password"
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter Password"
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="form__custom-button">
-                            Login
-                        </button>
-                    </form>
-                </div>
-            </div>
-        );
-    } else{
-        return (
-            <div className="auth-page">
-                <div className="container">
-                    <h1>Register</h1>
-                    <form className="form" onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                id="fname"
-                                value={fname}
-                                onChange={(e) => setFname(e.target.value)}
-                                placeholder="Enter first name"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                id="lname"
-                                value={lname}
-                                onChange={(e) => setLname(e.target.value)}
-                                placeholder="Enter last name"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                id="handle"
-                                value={handle}
-                                onChange={(e) => setHandle(e.target.value)}
-                                placeholder="Enter handle"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="email"
-                                id="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter Email"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="text"
-                                id="username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                placeholder="Enter username"
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <input
-                                type="password"
-                                id="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter Password"
-                                required
-                            />
-                        </div>
-                        <button type="submit" className="form__custom-button">
-                            Create Account
-                        </button>
-                    </form>
-                </div>
-            </div>
-        );
-    }
+    useEffect(() => {
+        setFname("");
+        setLname("");
+        setHandle("");
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setRole(0);
+        console.log(`Authentication status changed: ${isAuthenticated}`);
+    }, [authType, isAuthenticated]);
 
+    return (
+        <div className="auth-page">
+            <div className="container">
+                <h1>{authType === "login" ? "Login" : "Register"}</h1>
+                <form className="form" onSubmit={handleSubmit}>
+                    {authType === "register" && (
+                        <>
+                            <div className="form-group"><input type="text" value={fname} onChange={(e) => setFname(e.target.value)} placeholder="First Name" required /></div>
+                            <div className="form-group"><input type="text" value={lname} onChange={(e) => setLname(e.target.value)} placeholder="Last Name" required /></div>
+                            <div className="form-group"><input type="text" value={handle} onChange={(e) => setHandle(e.target.value)} placeholder="Handle" required /></div>
+                            <div className="form-group"><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required /></div>
+                            <div className="form-group">
+                                <label>
+                                    <input
+                                        type="radio"
+                                        value="1"
+                                        checked={role === "1"}
+                                        onChange={(e) => setRole(e.target.value)}
+                                    />
+                                    Dungeon Master Account
+                                </label>
+                                <label>
+                                    <input
+                                        type="radio"
+                                        value="0"
+                                        checked={role === "0"}
+                                        onChange={(e) => setRole(e.target.value)}
+                                    />
+                                    Player Character Account
+                                </label>
+                            </div>
+                        </>
+                    )}
+                     <div className="form-group"><input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" required /></div>
+                     <div className="form-group"><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required /></div>
+                    <button type="submit" className="form-button">{authType === "login" ? "Login" : "Create Account"}</button>
+                </form>
+                <div className="register-login-option">
+                    <button
+                        type="button"
+                        className="switch-btn"
+                        onClick={() => { setAuthType(authType === "login" ? "register" : "login");}}
+                    >
+                        {authType === "login" ? "Need an account? Register here" : "Have an account? Login here"}
+                    </button>
+                </div>
+            </div>
+            <Snackbar
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                open={snackbar}
+                autoHideDuration={3000}
+                onClose={handleSnackbarClose}
+                message="Username is already Taken!"
+            />
+        </div>
+    );
 }
 
 export default Login;

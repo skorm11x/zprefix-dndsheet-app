@@ -8,6 +8,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { AppBar } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useNavigate } from "react-router";
 
 import './AppBar.css';
 
@@ -20,6 +21,7 @@ function BaseAppBar() {
     const {setSearch} = useSearch();
     const [searchInput, setSearchInput] = useState('');
     const { isAuthenticated, user, login, logout } = useAuth();
+    let navigate = useNavigate();
 
     const open = Boolean(anchorEl);
     const handleClick = (event) => {
@@ -86,7 +88,7 @@ function BaseAppBar() {
             {isAuthenticated ? (
               <div>
                 <MenuItem component={Link} to="/profile" onClick={handleClose}>Profile</MenuItem>
-                <MenuItem onClick={() => { logout(); handleClose(); }}>Logout</MenuItem>
+                <MenuItem onClick={() => { logout(); handleClose(); navigate('/home') }}>Logout</MenuItem>
               </div>
             ) : (
               <div>

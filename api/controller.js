@@ -203,11 +203,16 @@ async function postTableEntries(path, params) {
                     const passMatch = await bcrypt.compare(params.password, user.password);
                     if (passMatch) {
                         console.log(`User ${params.username} auth SUCCESS.`);
-                        return true;
+
+                        const authStatus = {
+                            user: user,
+                            status: "SUCCESS"
+                        }
+                        return authStatus;
                     }
                 }
                 console.log(`User ${params.username} authenticated FALSE.`);
-                return false;
+                return {status: "FAILURE"};
                 
             } catch (err) {
                 res.status(500).json({ authenticated: false, error: 'Login failed' });
