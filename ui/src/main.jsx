@@ -1,6 +1,9 @@
-import { createRoot } from 'react-dom/client'
-import Layout from './layout/Layout.jsx'
-import HomePage from './routes/HomePage.jsx'
+import { createRoot } from 'react-dom/client';
+import Layout from './layout/Layout.jsx';
+import HomePage from './routes/HomePage.jsx';
+import GamePage from './routes/GamePage.jsx';
+import EnvironmentPage from './routes/EnvironmentPage.jsx';
+import CharacterPage from './routes/CharacterPage.jsx';
 import LoginPage from './routes/LoginPage.jsx';
 import ProfilePage from './routes/ProfilePage.jsx';
 
@@ -18,6 +21,18 @@ const router = createBrowserRouter([
       {
         path: "/home",
         element: <HomePage />
+      },
+      {
+        path: "/games",
+        element: <GamePage />
+      },
+      {
+        path: "/environments",
+        element: <EnvironmentPage />
+      },
+      {
+        path: "/characters",
+        element: <CharacterPage />
       },
       {
         path: "/login",

@@ -10,11 +10,17 @@
     padding: 10px 20px;
 }
 
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .search-container {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: auto;
+    width: 50%;
     margin-right: auto
 }
 

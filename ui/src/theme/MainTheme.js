@@ -38,6 +38,13 @@ const components = {
       },
     },
   },
+  MuiAppBar: {
+    styleOverrides: {
+      root: {
+        padding: '16px',
+      },
+    },
+  },
 };
 
 const theme = createTheme({
