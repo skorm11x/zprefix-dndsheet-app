@@ -9,7 +9,7 @@ exports.up = function(knex) {
     table.string('lname'),
     table.string('handle'),
     table.string('email'),
-    table.string('username'),
+    table.string('username').unique(),
     table.string('password')
     table.integer('role')
   })

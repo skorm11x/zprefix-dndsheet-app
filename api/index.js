@@ -11,7 +11,8 @@ server.use(cors());
  */
 const { 
     getAllTableEntries,
-    getQueryTableEntries
+    getQueryTableEntries,
+    postTableEntries
  } = require('./controller.js');
 
 const validGetReqPaths = ['/users', '/characters', 
@@ -65,16 +66,22 @@ function getReqHandler(req, res) {
 }
 
 function postReqHandler(req, res) {
-    let params = req.query;
+    let params = req.body;
     let path = req.path;
 
     if(validPostReqPaths.includes(path)){
         console.log(`processing post for ${path} params: ${JSON.stringify(params)}`);
         if (Object.keys(params).length === 0) {
-            
+            //TODO
         } else{
-            
-        }
+            postTableEntries(path.slice(1, path.length), params)
+                .then((data) => {
+                    res.send(data);
+                })
+                .catch((err) => {
+                    res.status(404).send(err);
+                });
+            }
     } else{
         res.status(404).send(`Invalid endpoint specified: ${path}`);
     }
