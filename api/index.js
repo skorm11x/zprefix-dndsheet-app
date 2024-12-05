@@ -14,14 +14,21 @@ const {
     getQueryTableEntries
  } = require('./controller.js');
 
-const validReqPaths = ['/users', '/characters', 
-    '/environments', '/games', '/active_games', '/user_games',
-    '/login']
+const validGetReqPaths = ['/users', '/characters', 
+    '/environments', '/games', '/active_games',
+    '/user_games'];
+const validPostReqPaths = ['/users', '/characters',
+    '/environments', '/games', '/login'
+];
 
 server.use(express.json());
 
 server.get('*', (req, res) => {
     getReqHandler(req, res);
+});
+
+server.post('*', (req, res) => {
+    postReqHandler(req, res);
 });
 
 /**
@@ -33,7 +40,7 @@ function getReqHandler(req, res) {
     let params = req.query;
     let path = req.path;
 
-    if(validReqPaths.includes(path)){
+    if(validGetReqPaths.includes(path)){
         if (Object.keys(params).length === 0) {
             getAllTableEntries(path.slice(1, path.length))
                 .then((data) => {
@@ -61,8 +68,15 @@ function postReqHandler(req, res) {
     let params = req.query;
     let path = req.path;
 
-    if(validReqPaths.includes(path)){
+    if(validPostReqPaths.includes(path)){
         console.log(`processing post for ${path} params: ${JSON.stringify(params)}`);
+        if (Object.keys(params).length === 0) {
+            
+        } else{
+            
+        }
+    } else{
+        res.status(404).send(`Invalid endpoint specified: ${path}`);
     }
 }
 

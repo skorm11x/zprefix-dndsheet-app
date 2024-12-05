@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from '../context/AuthContext';
 import env from "react-dotenv";
+import bcrypt from 'bcryptjs'
 
 import './Login.css';
 
@@ -15,6 +16,8 @@ function Login() {
     const [role, setRole] = useState(0);
     const { isAuthenticated, user, login, logout} = useAuth();
 
+    const salt = bcrypt.genSaltSync(10)
+
     const handleSubmit = (event) => {
         event.preventDefault();
         let payload  = {};
@@ -23,6 +26,10 @@ function Login() {
                 alert("Please fill out all fields.");
                 return;
             }
+            //hash password
+
+            setPassword(bcrypt.hashSync(password,'*_+DFmkpda9%%^dfndkasdf88'));
+
             payload = {
                 fname, lname, handle, username,
                 email, password, role

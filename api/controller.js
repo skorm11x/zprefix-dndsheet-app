@@ -92,6 +92,16 @@ async function getQueryTableEntries(path, params) {
     return result;
 }
 
+async function postTableEntries(path, params) {
+    console.log(`path is ${path} with params: ${JSON.stringify(params)}`);
+
+    switch(path){
+        case 'login':
+            console.log(`login attempt with params: ${JSON.stringify(params)}`)
+            break;
+    }
+}
+
 module.exports = { 
     getAllTableEntries,
     getQueryTableEntries
