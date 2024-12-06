@@ -11,13 +11,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   const login = (userData) => {
-    setIsAuthenticated(true);
-    setUser(userData);
+    return new Promise((resolve) => {
+      setIsAuthenticated(true);
+      setUser(userData);
+      resolve();
+    });
   };
 
   const logout = () => {
-    setIsAuthenticated(false);
-    setUser(null);
+    return new Promise((resolve) => {
+      setIsAuthenticated(false);
+      setUser(userData);
+      resolve();
+    });
   };
 
   return (

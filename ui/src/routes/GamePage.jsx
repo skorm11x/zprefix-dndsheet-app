@@ -9,11 +9,15 @@ import { useState, useEffect } from "react";
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 
 
 export default function GamePage() {
     const [games, setGames] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { isAuthenticated, user, login, logout} = useAuth();
+    let navigate = useNavigate();
 
     const fetchGames = async () => {
         setLoading(true);
@@ -71,6 +75,29 @@ export default function GamePage() {
                     />
                 </Paper>
             </div>
+            {isAuthenticated == true && user.role == 1 && (
+                <>
+                    <div className="env-options">
+                        <button type="button" onClick={() => navigate('/game_create')}>
+                            Create Game
+                        </button>
+                    </div>
+                </>
+            )}
+            {isAuthenticated == true && user.role == 0 && (
+                <>
+                    <div className="env-options">
+                        Register with a DM account to create games!
+                    </div>
+                </>
+            )}
+            {isAuthenticated == false && (
+                <>
+                    <div className="env-options">
+                        Login or Register with a DM account to create and export games!
+                    </div>
+                </>
+            )}
         </div>
     );
 }

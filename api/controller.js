@@ -3,13 +3,13 @@ const environment = process.env.ENVIRONMENT;
 const bcrypt = require('bcryptjs');
 const knex = require("knex")(require("./knexfile.js")[environment]);
 
-const userFields = ['fname', 'lname', 'handle', 'username', 'password', 'role'];
-const characterFields =  ['fname', 'lname', 'race', 'class', 'alignment', 'deity',
+const userFields = ['id','fname', 'lname', 'handle', 'username', 'password', 'role'];
+const characterFields =  ['id', 'fname', 'lname', 'race', 'class', 'alignment', 'deity',
      'background', 'str', 'dex', 'con', 'int', 'wis', 'cha'];
-const environmentFields = ['name'];
-const gamesFields = ['name', 'dm_id', 'environment_id', 'start_date'];
-const activeGamesFields = ['game_id'];
-const userGamesFields = ['user_id', 'game_id', 'character_id'];
+const environmentFields = ['id', 'name'];
+const gamesFields = ['id', 'name', 'dm_id', 'environment_id', 'start_date'];
+const activeGamesFields = ['id', 'game_id'];
+const userGamesFields = ['id', 'user_id', 'game_id', 'character_id'];
 
 
 async function getAllTableEntries(path) {
@@ -33,8 +33,9 @@ async function getQueryTableEntries(path, params) {
     switch(path) {
         case 'users':
             userFields.forEach(field => {
+                console.log(`process field ${field}`)
                 if(params[field]) {
-                    if(field == 'role'){
+                    if(field == 'role' || field == 'id'){
                         query = query.where(field, '=', parseInt(params[field]));
                     } else{
                         query = query.where(field, 'LIKE', `%${params[field]}%`);
@@ -46,7 +47,7 @@ async function getQueryTableEntries(path, params) {
             characterFields.forEach(field => {
                 if(params[field]) {
                     if(field == 'str' || field == 'dex' || field == 'con' ||
-                        field == 'int' || field == 'wis' || field == 'cha'
+                        field == 'int' || field == 'wis' || field == 'cha' || field == 'id'
                     ){
                         query = query.where(field, '=', parseInt(params[field]));
                     } else{
@@ -58,17 +59,22 @@ async function getQueryTableEntries(path, params) {
         case 'environments':
             environmentFields.forEach(field => {
                 if(params[field]) {
-                    query = query.where(field, 'LIKE', `%${params[field]}%`);
+                    if(field == 'id') {
+                        query = query.where(field, '=', parseInt(params[field]));
+                    } else{
+                        query = query.where(field, 'LIKE', `%${params[field]}%`);
+                    }
                 }
             })
             break;
         case 'games':
             gamesFields.forEach(field => {
                 if(params[field]) {
-                    if(field == 'dm_id' || field == 'environment_id'){
+                    if(field == 'dm_id' || field == 'environment_id' || field == 'id'){
                         query = query.where(field, '=', parseInt(params[field]));
+                    } else{
+                        query = query.where(field, 'LIKE', `%${params[field]}%`);
                     }
-                    query = query.where(field, 'LIKE', `%${params[field]}%`);
                 }
             })
             break;
@@ -90,11 +96,12 @@ async function getQueryTableEntries(path, params) {
 
     console.log(`built final query: ${query}`)
     const result = await query;
+    console.log(`final result ${JSON.stringify(result)}`)
     return result;
 }
 
 /**
- * 
+ * TODO: clean up error messages
  * @param {*} path : the request endpoint
  * @param {*} params : the request body
  * @returns 
@@ -113,7 +120,7 @@ async function postTableEntries(path, params) {
                     email, password: hashedPassword, fname,
                     lname, handle, username, role
                 })
-                .returning(["id", "fname", "lname", "handle", "username", "role"])
+                .returning(["id", "fname", "lname", "handle", "email", "username", "role"])
 
                 if (newUser.length === 0) {
                     return { status: "FAILURE", error: "User not created" };
@@ -153,9 +160,8 @@ async function postTableEntries(path, params) {
                 };
                 return charStatus;
             } catch(err) {
-                res.status(500).json({ status: "FAILURE", error: err });
+                return {status: "FAILURE"};
             }
-            break;
         case 'environments':
             try{
                 const { name } = params;
@@ -171,9 +177,8 @@ async function postTableEntries(path, params) {
                 }
                 return envStatus;
             } catch(err) {
-                res.status(500).json({ status: "FAILURE", error: err });
+                return {status: "FAILURE"};
             }
-            break;
         case 'games':
             try{
                 const { name, dm_id, environment_id, start_date } = params;
@@ -183,15 +188,16 @@ async function postTableEntries(path, params) {
                 })
                 .returning(["id", "name", "dm_id", "environment_id", "start_date"])
 
+                console.log(`new game is ${JSON.stringify(newGame)}`)
+
                 const gameStatus = {
                     ...newGame[0],
                     status: "SUCCESS"
                 }
                 return gameStatus;
             } catch(err) {
-                res.status(500).json({ status: "FAILURE", error: err });
+                return {status: "FAILURE", error: err};
             }
-            break;
         case 'login':
             try{
                 const user = await knex("users")
@@ -215,15 +221,49 @@ async function postTableEntries(path, params) {
                 return {status: "FAILURE"};
                 
             } catch (err) {
-                res.status(500).json({ authenticated: false, error: 'Login failed' });
+                return {status: "FAILURE"};
             }
-            break;
+        case 'user_games':
+            try{
+                const { user_id, game_id } = params;
+                const newUG = await knex("user_games")
+                .insert({
+                    user_id, game_id
+                })
+                .returning(["user_id", "game_id"])
+
+                const UGStatus = {
+                    ...newUG[0],
+                    status: "SUCCESS"
+                }
+                return UGStatus;
+
+            } catch(err) {
+                return {status: "FAILURE"};
+            }
+    }
+}
+
+/**
+ * 
+ * @param {*} path 
+ * @param {*} params 
+ */
+async function deleteQueryTableEntries(path, params) {
+    console.log(`path is ${path} with params: ${JSON.stringify(params)}`);
+    try {
+        let query = await knex(path).where('id', parseInt(params.id)).del();
+        return query;
+    } catch (error) {
+        console.error(`Failure to delete with endpoint ${path}:`, error);
+        throw error;
     }
 }
 
 module.exports = { 
     getAllTableEntries,
     getQueryTableEntries,
-    postTableEntries
+    postTableEntries,
+    deleteQueryTableEntries
 }
 

@@ -9,11 +9,15 @@ import { useState, useEffect } from "react";
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import { useNavigate } from "react-router-dom";
+import { useAuth } from '../context/AuthContext';
 
 
 export default function EnvironmentPage() {
     const [environments, setEnvironments] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { isAuthenticated, user, login, logout} = useAuth();
+    let navigate = useNavigate();
 
     const fetchEnvironments = async () => {
         setLoading(true);
@@ -68,6 +72,22 @@ export default function EnvironmentPage() {
                     />
                 </Paper>
             </div>
+            {isAuthenticated == true && user != null && (
+                <>
+                    <div className="env-options">
+                        <button type="button" onClick={() => navigate('/env_create')}>
+                            Create Environment
+                        </button>
+                    </div>
+                </>
+            )}
+            {isAuthenticated == false && (
+                <>
+                    <div className="env-options">
+                        Login or Register to create and export environments!
+                    </div>
+                </>
+            )}
         </div>
     );
 }

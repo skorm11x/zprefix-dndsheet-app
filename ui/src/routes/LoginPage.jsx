@@ -28,57 +28,55 @@ function Login() {
         setSnackbar(false);
     };
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        let payload  = {};
-        if(authType == "register"){
+        let payload = {};
+        if (authType == "register") {
             if (!email || !password || !fname || !lname || !handle || !username || !role) {
                 alert("Please fill out all fields.");
                 return;
             }
-
+    
             payload = {
                 fname, lname, handle, username,
                 email, password, role
             };
-            //${import.meta.env.VITE_API_SERVER_BASE}
-            //http://localhost:3000
-            fetch(`${import.meta.env.VITE_API_SERVER_BASE}/users`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Failed to Register user");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    if(data.status == "SUCCESS"){
-                      console.log("Login successful:", data);
-                      alert("Registration successful!");
-                      login(data.username);
-                      console.log(isAuthenticated);
-                      navigate('/home');
-                    } else{
-                        if(data.error == "Username already exists!"){
-                            setSnackbarMsg("Username is already taken!");
-                            setSnackbar(true);
-                        } else{
-                            console.log("Register FAILURE:", data);
-                            alert("REGISTER FAILURE!");
-                        }
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error Register in:", error);
-                    alert("Failed to REgister. Please try again.");
+    
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE}/users`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
                 });
-
-        } else{
+    
+                if (!response.ok) {
+                    throw new Error("Failed to Register user");
+                }
+    
+                const data = await response.json();
+    
+                if (data.status == "SUCCESS") {
+                    console.log("Login successful:", data);
+                    alert("Registration successful!");
+                    await login(data);
+                    console.log(isAuthenticated);
+                    navigate('/profile');
+                } else {
+                    if (data.error == "Username already exists!") {
+                        setSnackbarMsg("Username is already taken!");
+                        setSnackbar(true);
+                    } else {
+                        console.log("Register FAILURE:", data);
+                        alert("REGISTER FAILURE!");
+                    }
+                }
+            } catch (error) {
+                console.error("Error Register in:", error);
+                alert("Failed to Register. Please try again.");
+            }
+        } else {
             if (!password || !username) {
                 alert("Please fill out all fields.");
                 return;
@@ -86,37 +84,36 @@ function Login() {
             payload = {
                 username, password
             };
-            //${import.meta.env.VITE_API_SERVER_BASE}
-            fetch(`${import.meta.env.VITE_API_SERVER_BASE}/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Failed to log in");
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    if(data.status == "SUCCESS"){
-                      console.log(`Login successful: ${username} currently auth: ${isAuthenticated}`);
-                      alert(`Login successful! for ${username}`);
-                      login(data.user);
-                      navigate('/home');
-                    } else{
-                      console.log("Login FAILURE:", data);
-                      alert("Login FAILURE!");
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error logging in:", error);
-                    alert("Failed to log in. Please try again.");
+    
+            try {
+                const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE}/login`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
                 });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to log in");
+                }
+    
+                const data = await response.json();
+    
+                if (data.status == "SUCCESS") {
+                    console.log(`Login successful: ${username} currently auth: ${isAuthenticated}`);
+                    alert(`Login successful! for ${username}`);
+                    await login(data.user);
+                    navigate('/profile');
+                } else {
+                    console.log("Login FAILURE:", data);
+                    alert("Login FAILURE!");
+                }
+            } catch (error) {
+                console.error("Error logging in:", error);
+                alert("Failed to log in. Please try again.");
+            }
         }
-
     };
 
     useEffect(() => {

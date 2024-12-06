@@ -14,15 +14,17 @@ server.use(cors());
 const { 
     getAllTableEntries,
     getQueryTableEntries,
-    postTableEntries
+    postTableEntries,
+    deleteQueryTableEntries
  } = require('./controller.js');
 
 const validGetReqPaths = ['/users', '/characters', 
     '/environments', '/games', '/active_games',
     '/user_games'];
 const validPostReqPaths = ['/users', '/characters',
-    '/environments', '/games', '/login'
+    '/environments', '/games', '/login', '/user_games'
 ];
+const validDeleteReqPaths = ['/users', '/characters', '/environments', '/games']; //TODO on permissions needing ownership
 
 server.use(express.json());
 
@@ -32,6 +34,10 @@ server.get('*', (req, res) => {
 
 server.post('*', (req, res) => {
     postReqHandler(req, res);
+});
+
+server.delete('*', (req, res) => {
+    deleteReqHandler(req, res);
 });
 
 /**
@@ -91,6 +97,31 @@ function postReqHandler(req, res) {
                 });
             }
     } else{
+        res.status(404).send(`Invalid endpoint specified: ${path}`);
+    }
+}
+
+function deleteReqHandler(req, res) {
+    let params = req.query;
+    let path = req.path;
+    console.log(`received delete of ${path} with params: ${JSON.stringify(params)}`);
+
+    if(validDeleteReqPaths.includes(path)){
+        //forbidden to delete everything
+        if (Object.keys(params).length === 0) {
+            res.status(403).send(`Illegal delete of all: ${path}`);
+        } else {
+            deleteQueryTableEntries(path.slice(1, path.length), params)
+                .then((data) => {
+                    console.log(`delete success`)
+                    res.status(200).send();
+                })
+                .catch((err) => {
+                    res.status(404).send(err);
+                });
+        }
+    } else{
+        //bad endpoint
         res.status(404).send(`Invalid endpoint specified: ${path}`);
     }
 }

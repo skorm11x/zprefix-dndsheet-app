@@ -9,11 +9,15 @@ import { useState, useEffect } from "react";
 import { DataGrid } from '@mui/x-data-grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from "react-router-dom";
 
 
 export default function CharacterPage() {
     const [characters, setCharacters] = useState([]);
     const [loading, setLoading] = useState(false);
+    const { isAuthenticated, user, login, logout} = useAuth();
+    let navigate = useNavigate();
 
     const fetchCharacters = async () => {
         setLoading(true);
@@ -80,6 +84,22 @@ export default function CharacterPage() {
                     />
                 </Paper>
             </div>
+            {isAuthenticated == true && user != null && (
+                <>
+                    <div className="character-options">
+                        <button type="button" onClick={() => navigate('/character_create')}>
+                            Create Character
+                        </button>
+                    </div>
+                </>
+            )}
+            {isAuthenticated == false && (
+                <>
+                    <div className="character-options">
+                        Login or Register to create and export characters!
+                    </div>
+                </>
+            )}
         </div>
     );
 }

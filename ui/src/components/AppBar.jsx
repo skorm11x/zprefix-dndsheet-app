@@ -84,30 +84,6 @@ function BaseAppBar() {
               </MenuItem>
             </div>
           </Menu>
-              <div className="search-container">
-                <InputBase
-                  className="search-input"
-                  placeholder="Search for game name…"
-                  inputProps={{ 'aria-label': 'search' }}
-                  value={searchInput}
-                  onChange={handleSearchInputChange}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      setSearch(searchInput);
-                      setSearchInput('');
-                    }}}
-                />
-                <div className="search-icon-wrapper">
-                  <Button
-                  onClick={() => {
-                    setSearch(searchInput);
-                    setSearchInput('');
-                  }}
-                  >
-                    <SearchIcon />
-                  </Button>
-                </div>
-              </div>
               <Button
               id="basic-button"
               aria-controls={open ? 'basic-menu' : undefined}
