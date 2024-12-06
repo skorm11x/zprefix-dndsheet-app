@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 
+import './GamePage.css'
+
 
 export default function GamePage() {
     const [games, setGames] = useState([]);
@@ -62,6 +64,10 @@ export default function GamePage() {
                         rowsPerPageOptions={[10]}
                         loading={loading}
                         getRowId={(row) => row.id}
+                        onRowDoubleClick={(params, event) => {
+                            console.log('Double clicked row:', params.row);
+                            
+                        }}
                         sx={{
                             '& .MuiDataGrid-columnHeader': {
                                 backgroundColor: '#1976d2',

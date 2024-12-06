@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from "react-router-dom";
 
+import './CharacterPage.css'
+
 
 export default function CharacterPage() {
     const [characters, setCharacters] = useState([]);
@@ -60,7 +62,7 @@ export default function CharacterPage() {
     ];
 
     return (
-        <div className="character-main" style={{marginTop: 95}}>
+        <div className="character-page" style={{marginTop: 95}}>
             {loading && <Typography variant="h6">Loading...</Typography>}
             <div className="character-container" style={{ height: '100%', width: '100%' }}>
                 <Paper style={{ height: '100%', width: '100%' }}>

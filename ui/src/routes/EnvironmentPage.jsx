@@ -12,6 +12,8 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../context/AuthContext';
 
+import './EnvironmentPage.css'
+
 
 export default function EnvironmentPage() {
     const [environments, setEnvironments] = useState([]);
@@ -48,9 +50,9 @@ export default function EnvironmentPage() {
     ];
 
     return (
-        <div className="env-main" style={{marginTop: 95}}>
+        <div className="environment-page" style={{marginTop: 95}}>
             {loading && <Typography variant="h6">Loading...</Typography>}
-            <div className="env-container" style={{ height: '100%', width: '100%' }}>
+            <div className="environment-container" style={{ height: '100%', width: '100%' }}>
                 <Paper style={{ height: '100%', width: '100%' }}>
                     <DataGrid
                         rows={environments}
@@ -75,7 +77,7 @@ export default function EnvironmentPage() {
             {isAuthenticated == true && user != null && (
                 <>
                     <div className="env-options">
-                        <button type="button" onClick={() => navigate('/env_create')}>
+                        <button type="button" onClick={() => navigate('/environment_create')}>
                             Create Environment
                         </button>
                     </div>

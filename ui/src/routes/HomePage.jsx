@@ -8,12 +8,26 @@ import './HomePage.css'
 function HomePage() {
     const { isAuthenticated, user } = useAuth();
     const [recentActivity, setRecentActivity] = useState([]);
+    const [numGames, setNumGames] = useState(0);
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (isAuthenticated && user) {
+            const fetchUserGames = async () => {
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE}/user_games?user_id=${user.id}`);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const data = await response.json();
+                    setNumGames(data.length);
+                } catch (error) {
+                    console.error('Error fetching user games:', error);
+                }
+            };
 
+            fetchUserGames();
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, user]);
 
     if (!isAuthenticated) {
         return (
@@ -75,8 +89,7 @@ function HomePage() {
                         <Grid2 item xs={12} md={4}>
                             <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="h6" gutterBottom>Your Stats</Typography>
-                                <Typography variant="body2">Games: {user.gamesCount}</Typography>
-                                <Typography variant="body2">Characters: {user.charactersCount}</Typography>
+                                <Typography variant="body2">Number of games: {numGames}</Typography>
                             </Paper>
                         </Grid2>
                     </Grid2>

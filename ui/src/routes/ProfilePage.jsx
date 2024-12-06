@@ -1,8 +1,15 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from "react-router-dom";
 import { Container, Paper, Box, Avatar, Typography,
      Divider, List, ListItem, ListItemText, Button } from '@mui/material';
+
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function ProfilePage() {
     const { isAuthenticated, user } = useAuth();
@@ -10,7 +17,20 @@ function ProfilePage() {
     const [userGames, setUserGames] = useState([]); //holds all the games the dm is with
     const [games, setGames] = useState([]); //holds all the game specific info
     const [gameUsers, setGameUsers] = useState({}); //holds all the users per game e.g. 1: {1,2,3}
-    let navigate = useNavigate()
+    const [editingGame, setEditingGame] = useState(null);
+
+    let navigate = useNavigate();
+    const [open, setOpen] = React.useState(false);
+
+    const editGame = (game) => {
+        setEditingGame(game);
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
 
     const fetchUserGames = async () => {
         setLoading(true);
@@ -104,27 +124,37 @@ function ProfilePage() {
         }
     };
 
-    const editGame = async (gameId) => {
-        console.log(`starting to edit game: ${gameId}`);
+    const handleSubmitEdit = async () => {
+        const updatedData = {
+            name: editingGame.name,
+            environment_id: editingGame.environment_id,
+            start_date: editingGame.start_date
+          };
+
+          console.log(`uodated data is ${JSON.stringify(updatedData)}`)
+        
         try {
-            const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE}/games/${gameId}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(updatedData),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to edit game");
-            }
-
-            alert("Game updated successfully!");
+          const response = await fetch(`${import.meta.env.VITE_API_SERVER_BASE}/games?id=${editingGame.id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedData),
+          });
+          
+          if (!response.ok) {
+            throw new Error("Failed to edit game");
+          }
+          
+          alert("Game updated successfully!");
+          setOpen(false);
+          fetchUserGames();
         } catch (error) {
-            console.error("Error editing game:", error);
-            alert("An error occurred while editing the game.");
+          console.error("Error editing game:", error);
+          alert("An error occurred while editing the game.");
         }
     };
+
 
     useEffect(() => {
         if (isAuthenticated && user) {
@@ -191,7 +221,7 @@ function ProfilePage() {
                                                         <Typography variant="h6" style={{ marginRight: '16px' }}>start date: {game.start_date}</Typography>
                                                     </div>
                                                     <div>
-                                                        <Typography variant="body2">Users Id's:</Typography>
+                                                        <Typography variant="body2">Users Id&apos;s:</Typography>
                                                         {gameUsers[game.id]?.map(user => (
                                                             <Typography key={user.user_id} variant="body2">
                                                                 {user.user_id}
@@ -199,7 +229,7 @@ function ProfilePage() {
                                                         ))}
                                                     </div>
                                                     <div>
-                                                        <Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => editGame(game.id)}>
+                                                        <Button variant="contained" color="primary" sx={{ mr: 1 }} onClick={() => editGame(game)}>
                                                             Edit Game
                                                         </Button>
                                                         <Button variant="outlined" color="error" sx={{ mr: 1 }} onClick={() => deleteGame(game.id)}>
@@ -232,6 +262,53 @@ function ProfilePage() {
                             ))}
                         </Paper>
                     )}
+                    <Dialog open={open} onClose={handleClose}>
+                        <DialogTitle>Edit Game</DialogTitle>
+                        <DialogContent>
+                            <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            name="name"
+                            label="Game Name"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            value={editingGame?.name || ''}
+                            onChange={(e) => setEditingGame({...editingGame, name: e.target.value})}
+                            />
+                            <TextField
+                            margin="dense"
+                            id="environment_id"
+                            name="environment_id"
+                            label="Environment ID"
+                            type="number"
+                            fullWidth
+                            variant="standard"
+                            value={editingGame?.environment_id || ''}
+                            onChange={(e) => setEditingGame({...editingGame, environment_id: e.target.value})}
+                            />
+                            <TextField
+                            margin="dense"
+                            id="start_date"
+                            name="start_date"
+                            label="Start Date"
+                            type="date"
+                            fullWidth
+                            variant="standard"
+                            value={editingGame?.start_date || ''}
+                            onChange={(e) => setEditingGame({...editingGame, start_date: e.target.value})}
+                            defaultValue={editingGame?.start_date}
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={handleClose}>Cancel</Button>
+                            <Button onClick={handleSubmitEdit}>Save Changes</Button>
+                        </DialogActions>
+                        </Dialog>
                 </div>
             </div>
         );

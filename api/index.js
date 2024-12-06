@@ -15,7 +15,8 @@ const {
     getAllTableEntries,
     getQueryTableEntries,
     postTableEntries,
-    deleteQueryTableEntries
+    deleteQueryTableEntries,
+    patchQueryTableEntries
  } = require('./controller.js');
 
 const validGetReqPaths = ['/users', '/characters', 
@@ -25,6 +26,7 @@ const validPostReqPaths = ['/users', '/characters',
     '/environments', '/games', '/login', '/user_games'
 ];
 const validDeleteReqPaths = ['/users', '/characters', '/environments', '/games']; //TODO on permissions needing ownership
+const validPatchReqPaths = ['/games'];
 
 server.use(express.json());
 
@@ -39,6 +41,10 @@ server.post('*', (req, res) => {
 server.delete('*', (req, res) => {
     deleteReqHandler(req, res);
 });
+
+server.patch('*', (req, res) => {
+    patchReqHandler(req, res);
+})
 
 /**
  * Takes in a http get request for all path and queries and route
@@ -123,6 +129,27 @@ function deleteReqHandler(req, res) {
     } else{
         //bad endpoint
         res.status(404).send(`Invalid endpoint specified: ${path}`);
+    }
+}
+
+function patchReqHandler(req, res) {
+    let params = req.body;
+    let query = req.query;
+    let path = req.path;
+    console.log(`received patch of ${path} with params: ${JSON.stringify(params)} query: ${JSON.stringify(query)}`);
+    if(validDeleteReqPaths.includes(path)){
+        if (Object.keys(params).length === 0) {
+            res.status(403).send(`Illegal patch of all: ${path}`);
+        } else {
+            patchQueryTableEntries(path.slice(1, path.length), params, query)
+                .then((data) => {
+                    console.log(`patch success`)
+                    res.send(data);
+                })
+                .catch((err) => {
+                    res.status(404).send(err);
+                });
+        }
     }
 }
 

@@ -260,10 +260,44 @@ async function deleteQueryTableEntries(path, params) {
     }
 }
 
+async function patchQueryTableEntries(path, params, query) {
+    console.log(`path is ${path} with params: ${JSON.stringify(params)} query: ${JSON.stringify(query)}`);
+    switch(path) {
+        case 'games':
+            try {
+                const { name, environment_id, start_date } = params;
+                const {id} = query
+                const updatedGame = await knex("games")
+                    .where({ id })
+                    .update({
+                        name,
+                        environment_id,
+                        start_date
+                    })
+                    .returning(["id", "name", "dm_id", "environment_id", "start_date"]);
+
+                if (updatedGame.length === 0) {
+                    return { status: "FAILURE", error: "Game not updated" };
+                }
+
+                const gameStatus = {
+                    ...updatedGame[0],
+                    status: "SUCCESS"
+                };
+
+                console.log(`patch final status: ${JSON.stringify(gameStatus)}`)
+                return gameStatus;
+            } catch(err) {
+                return { status: "FAILURE", error: err.message };
+            }
+    }
+}
+
 module.exports = { 
     getAllTableEntries,
     getQueryTableEntries,
     postTableEntries,
-    deleteQueryTableEntries
+    deleteQueryTableEntries,
+    patchQueryTableEntries
 }
 

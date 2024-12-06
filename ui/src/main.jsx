@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         element: <EnvironmentPage />
       },
       {
-        path: "/env_create",
+        path: "/environment_create",
         element: <EnvCreatePage />
       },
       {
