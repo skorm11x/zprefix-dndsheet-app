@@ -1,0 +1,22 @@
+services:
+  ui:
+    container_name: "pathfinder1e-ui"
+    env_file:
+      - ./ui/.env
+    build: ./ui/
+    ports: 
+      - "8080:5173"
+  api:
+    container_name: "pathfinder1e-api"
+    build: ./api/
+    env_file:
+      - ./api/.env
+    ports:
+      - "3000:3000"
+  db:
+    image: postgres
+    container_name: "pathfinder1e-db"
+    ports:
+      - "5432:5432"
+    volumes:
+      - $HOME/docker/volumes/postgres:/var/lib/postgresql/data

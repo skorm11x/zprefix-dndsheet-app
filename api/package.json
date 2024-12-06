@@ -4,7 +4,7 @@
   "description": "express api server for zprefix app",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run  && node index.js"
   },
   "keywords": [
     "api"
